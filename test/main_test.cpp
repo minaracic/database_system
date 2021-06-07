@@ -7,13 +7,9 @@
 class DatabaseTest : public testing::Test{
 protected:
     void SetUp() override{
-        try{
-            test_database.insertTable(&test_table1);
-            test_database.insertTable(&test_table1);
-            test_database.insertTable(&test_table2);
-        }catch(NotUniqueTableName n){
-            std::cout << n.what();
-        }
+
+        test_database.insertTable(&test_table1);
+        test_database.insertTable(&test_table2);
 
         test_table1.insertColumn(ColumnDataInfo(DataType::DOUBLE, "Height", false));
         test_table1.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "Profile", false));
@@ -37,6 +33,19 @@ TEST(TestTable, createNewTableAndCheckSetName) {
 TEST_F(DatabaseTest, addDataInTable) {
     bool inserted = test_table1.insertData({new Double(20.3), new Varchar30("Profile1")});
     ASSERT_TRUE(inserted);
+}
+
+TEST_F(DatabaseTest, addTableWithSameNameError) {
+    std::cout << "database";
+    try{
+        Database test_database = Database("test_database");
+
+        test_database.insertTable(new Table("test_table1"));
+        test_database.insertTable(new Table("test_table1"));
+    }catch (NotUniqueTableName n){
+        ASSERT_EQ("Table with this name already exists!", n.what());
+//        ASSERT_EQ(NotUniqueTableName::msg, n.what());
+    }
 }
 
 TEST(TestTable, addOneColumnAndCheckIfAddedCorrectly) {

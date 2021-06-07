@@ -1,6 +1,6 @@
 #include "database.h"
 
-void Database::insertTable(Table *to_insert) throw(struct NotUniqueTableName) {
+void Database::insertTable(Table *to_insert) throw(NotUniqueTableName) {
     if(database_tables_by_name.find(to_insert->table_name)!=database_tables_by_name.end()){
         throw new NotUniqueTableName();
     }

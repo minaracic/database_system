@@ -10,12 +10,7 @@ FetchContent_MakeAvailable(googletest)
 
 # Now simply link against gtest or gtest_main as needed. Eg
 add_executable(database_system_test
-        main_test.cpp
-        ../src/table/table.cpp
-        ../src/column_data_info/column_data_info.cpp
-        ../src/data_types/data_types.cpp
-        ../src/database/database.cpp
-        ../src/primary_key_generator/primary_key_generator.cpp)
+        main_test.cpp)
 
 #add_dependencies(database_system_test src)
 
@@ -28,4 +23,5 @@ target_include_directories(database_system_test PUBLIC
         ${PROJECT_SOURCE_DIR}/src/data_types)
 
 target_link_libraries(database_system_test PUBLIC
-        gtest_main)
+        gtest_main
+        src)
