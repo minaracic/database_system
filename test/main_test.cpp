@@ -36,15 +36,11 @@ TEST_F(DatabaseTest, addDataInTable) {
 }
 
 TEST_F(DatabaseTest, addTableWithSameNameError) {
-    std::cout << "database";
     try{
         Database test_database = Database("test_database");
-
-        test_database.insertTable(new Table("test_table1"));
         test_database.insertTable(new Table("test_table1"));
     }catch (NotUniqueTableName n){
         ASSERT_EQ("Table with this name already exists!", n.what());
-//        ASSERT_EQ(NotUniqueTableName::msg, n.what());
     }
 }
 
