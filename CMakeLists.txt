@@ -10,6 +10,7 @@ add_subdirectory(src/table)
 add_subdirectory(src/column_data_info)
 add_subdirectory(src/data_types)
 add_subdirectory(test)
+add_subdirectory(src/exceptions)
 
 add_executable(database_system main.cpp)
 

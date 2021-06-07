@@ -1,11 +1,10 @@
 #include "database.h"
 
-bool Database::checkTableNameUniqueAndInsertTable(Table* to_insert) {
-    if(isTableNameUnique(to_insert->getTableName())){
-        database_tables.push_back(to_insert);
-        return true;
+void Database::insertTable(Table *to_insert) throw(struct NotUniqueTableName) {
+    if(database_tables_by_name.find(to_insert->table_name)!=database_tables_by_name.end()){
+        throw new NotUniqueTableName();
     }
-    return false;
+    database_tables_by_name[to_insert->table_name] = to_insert;
 }
 
 Database::Database(const std::string &name) {
@@ -21,27 +20,20 @@ bool Database::removeTableByName(const std::string &table_name) {
     return false;
 }
 
-bool Database::isTableNameUnique(const std::string &name) {
-    for(int i=0;i<database_tables.size();i++){
-        if(database_tables[i]->getTableName() == name)return false;
-    }
-    return true;
-}
-
 void Database::printTablesInfo() const{
-    for(int i=0;i<database_tables.size();i++){
-        std::cout << database_tables[i]->getTableName() << std::endl;
-        database_tables[i]->printTable();
+    for(auto it=database_tables_by_name.begin();it!=database_tables_by_name.end();++it){
+        std::cout << it->second->table_name << std::endl;
+        it->second->printTable();
         std::cout << std::endl << std::endl;
     }
 }
 
 bool Database::updateTableName(const std::string &old_name, const std::string &new_name) {
-    if(isTableNameUnique(new_name)){
-        changeTableName(old_name, new_name);
-        return true;
-    }
-    return false;
+//    if(database_tables_by_name.find()){
+//        changeTableName(old_name, new_name);
+//        return true;
+//    }
+//    return false;
 }
 
 void Database::changeTableName(const std::string &old_name, const std::string &new_name) {
@@ -50,9 +42,5 @@ void Database::changeTableName(const std::string &old_name, const std::string &n
 }
 
 Table *Database::getTableByNameOrNull(const std::string &table_name) {
-    for(int i=0;i<database_tables.size();i++){
-        if(database_tables[i]->getTableName() == table_name)
-            return database_tables[i];
-    }
-    return nullptr;
+    return database_tables_by_name.find(table_name)->second;
 }

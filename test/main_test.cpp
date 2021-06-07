@@ -7,8 +7,13 @@
 class DatabaseTest : public testing::Test{
 protected:
     void SetUp() override{
-        test_database.checkTableNameUniqueAndInsertTable(&test_table1);
-        test_database.checkTableNameUniqueAndInsertTable(&test_table2);
+        try{
+            test_database.insertTable(&test_table1);
+            test_database.insertTable(&test_table1);
+            test_database.insertTable(&test_table2);
+        }catch(NotUniqueTableName n){
+            std::cout << n.what();
+        }
 
         test_table1.insertColumn(ColumnDataInfo(DataType::DOUBLE, "Height", false));
         test_table1.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "Profile", false));
