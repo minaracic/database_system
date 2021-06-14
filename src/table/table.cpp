@@ -1,17 +1,18 @@
 #include "table.h"
 
+#include <utility>
+
 Table::Table() {
 // TODO: test to see difference between stack and heap allocation
 //    ColumnDataInfo* default_pk_ptr = new ColumnDataInfo(new Integer(), "Primary key", true);
 //    ColumnDataInfo default_pk = ColumnDataInfo(new Integer(), "Primary key", true);
 //    insertColumn(*default_pk_ptr);
 
-    primary_key_generator = new PrimaryKeyGenerator();
     columns_info.push_back(ColumnDataInfo(DataType::INTEGER, "ID", true));
 }
 
 Table::Table(std::string table_name): Table(){
-    this->table_name = table_name;
+    this->table_name = std::move(table_name);
 }
 
 std::ostream &operator<<(std::ostream &os, const Table &t) {
@@ -27,8 +28,9 @@ void Table::printTable() const{
 
 bool Table::insertData(std::vector<DataValue*> data) {
     if(checkIfValidDataToInsert(data)){
-        table.push_back(data);
-        ids.push_back(primary_key_generator->getNextKey());
+        int id = primary_key_generator.getNextKey();
+        Row row{id, data};
+        rows.push_back(row);
         return true;
     }
     return false;
@@ -43,11 +45,89 @@ bool Table::checkIfValidDataToInsert(const std::vector<DataValue*> data) {
     return true;
 }
 
+template<typename T>
+T min(const T& a, const T& b) {
+    if (a < b) {
+        return a;
+    }
+    return b;
+}
+
+template<typename T>
+T min(T&& a, T&& b) {
+
+}
+
+template<typename...Ts>
+struct AddToDataValueFn {
+    static bool addToDataValue(DataValue* data_value, int value);
+};
+
+template<>
+template<typename T, typename...Ts>
+struct AddToDataValueFn<T, Ts...> {
+    static bool addToDataValue(DataValue* data_value, int value) {
+        if (AddToDataValueFn<T>::addToDataValue(data_value, value)) {
+            return true;
+        }
+        return AddToDataValueFn<Ts...>::addToDataValue(data_value, value);
+    }
+};
+
+template<>
+template<typename T>
+struct AddToDataValueFn<T> {
+    static bool addToDataValue(DataValue* data_value, int value) {
+        T* t = dynamic_cast<T*>(data_value);
+        if (t != nullptr) {
+            t->set(t->get() + value);
+            return true;
+        }
+        return false;
+    }
+};
+
+using AddToDataValue = AddToDataValueFn<Integer, Double>;
+
+struct AddToDataValueVariantFn {
+    int value;
+
+    bool operator()(Integer& i) {
+        i.set(i.get() + value);
+        return true;
+    }
+
+    bool operator()(Double& d) {
+        d.set(d.get() + value);
+        return true;
+    }
+
+    template<typename T>
+    bool operator()(T& t) {
+        return false;
+    }
+};
+
+bool Table::addToColumn(const std::string& column_name, int value) {
+    // Each row has the same schema within the same table.
+    for (Row& row : rows) {
+        for (DataValue& data_value : row.getData()) {
+//            if (!AddToDataValue::addToDataValue(data_value, value)) {
+//                return false;
+//            }
+            // Operation is not supported for the given column.
+//            return false;
+            std::visit(AddToDataValueVariantFn{value}, data_value);
+        }
+    }
+    return true;
+}
+
 std::string Table::getTableName() const{
     return table_name;
 }
 
-Table::Table(PrimaryKeyGenerator* table_name) {
+Table::Table(PrimaryKeyGenerator table_name) {
 
 }
 
@@ -59,14 +139,8 @@ void Table::printColumnsInfo() const {
 }
 
 void Table::printRows() const {
-    for(int i=0;i<table.size();i++){
-        std::cout << ids[i] << '\t';
-
-        for(int j=0;j<table[i].size();j++){
-            table[i][j]->print();
-        }
-
-        std::cout << std::endl;
+    for(int i=0;i<rows.size();i++){
+        rows[i].print();
     }
 }
 
@@ -78,8 +152,8 @@ std::vector<ColumnDataInfo> Table::getColumnsInfo() const {
     return columns_info;
 }
 
-std::vector<std::vector<DataValue *>> Table::getTable() const {
-    return table;
+const std::vector<Row>& Table::getRows() const {
+    return rows;
 }
 
 void Table::updateTableName(const std::string &new_name) {

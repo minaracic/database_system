@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <variant>
 
 // TODO: make specialized data types more concrete: varchar(30), long text..
 
@@ -14,37 +15,53 @@ enum DataType{
     BOOLEAN
 };
 
-class DataValue{
-protected:
-    DataType value_type;
-public:
-    void setDataType(DataType type);
-    DataType getDataType() const;
-    virtual void print();
+struct DataTypeFn {
+    // TODO: Implement.
+    // DataType data_type = std::visit(DataTypeFn{}, variant_value);
 };
 
 //inline constructor?
-class Integer: public DataValue{
+class Integer {
     int val;
 public:
     Integer(int v = 0);
+    void set(int v) {
+        val = v;
+    }
+    int get() const {
+        return val;
+    }
 
-    void print() override;
+    void print() const;
 };
 
-class Varchar30: public DataValue{
+class Varchar30 {
     std::string val;
 public:
     Varchar30(std::string v = "");
 
-    void print() override;
+    void print() const;
+
+    DataType getDataType() const {
+        return DataType::VARCHAR30;
+    }
 };
 
-class Double: public DataValue{
+class Double {
     double val = 0.0;
 public:
     Double(double v = 0.0);
 
-    void print() override;
+    void set(double v) {
+        val = v;
+    }
+
+    double get() const {
+        return val;
+    }
+
+    void print() const;
 };
+
+using DataValue = std::variant<Integer, Double, Varchar30>;
 

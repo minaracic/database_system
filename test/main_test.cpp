@@ -3,13 +3,13 @@
 #include "table/table.h"
 #include "column_data_info/column_data_info.h"
 #include "data_types/data_types.h"
+#include <memory>
 
 class DatabaseTest : public testing::Test{
 protected:
     void SetUp() override{
-
-        test_database.insertTable(&test_table1);
-        test_database.insertTable(&test_table2);
+        Table test_table1 = Table("test_table1");
+        Table test_table2 = Table("test_table2");
 
         test_table1.insertColumn(ColumnDataInfo(DataType::DOUBLE, "Height", false));
         test_table1.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "Profile", false));
@@ -17,11 +17,12 @@ protected:
         test_table2.insertColumn(ColumnDataInfo(DataType::DOUBLE, "Height", false));
         test_table2.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "Last name", false));
         test_table2.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "First name", false));
+
+        test_database.insertTable(std::move(test_table1));
+        test_database.insertTable(std::move(test_table2));
     }
 
     Database test_database = Database("test_database");
-    Table test_table1 = Table("test_table1");
-    Table test_table2 = Table("test_table2");
 };
 
 
@@ -31,14 +32,18 @@ TEST(TestTable, createNewTableAndCheckSetName) {
 }
 
 TEST_F(DatabaseTest, addDataInTable) {
-    bool inserted = test_table1.insertData({new Double(20.3), new Varchar30("Profile1")});
+
+    Table table{"test_table"};
+    table.insertColumn(ColumnDataInfo(DataType::DOUBLE, "Height", false));
+    table.insertColumn(ColumnDataInfo(DataType::VARCHAR30, "Profile", false));
+    bool inserted = table.insertData({new Double(20.3), new Varchar30("Profile1")});
     ASSERT_TRUE(inserted);
 }
 
 TEST_F(DatabaseTest, addTableWithSameNameError) {
     try{
         Database test_database = Database("test_database");
-        test_database.insertTable(new Table("test_table1"));
+        test_database.insertTable(Table("test_table1"));
     }catch (NotUniqueTableName n){
         ASSERT_EQ("Table with this name already exists!", n.what());
     }
