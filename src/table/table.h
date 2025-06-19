@@ -5,7 +5,6 @@
 #include "primary_key_generator.h"
 #include "column_data_info/column_data_info.h"
 #include <variant>
-//#include "database.h"
 
 class Database;
 
@@ -65,6 +64,7 @@ public:
     Table(PrimaryKeyGenerator pk_generator);
 
     bool insertData(std::vector<DataValue> data);
+    
     // Returns false if add operation is not supported for the given column (e.g. varchar).
     // Otherwise, returns true.
     bool addToColumn(const std::string& column_name, int value);
