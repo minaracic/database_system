@@ -1,3 +1,7 @@
+// These classes represent the data types that exist in the database.
+// There are INT, DOUBLE, FLOAT, BOOLEAN and VARCHARN.
+// INT - scalar singed values, from [-2^31-1, 2^31]
+//
 #pragma once
 #include <string>
 #include <variant>
@@ -8,11 +12,8 @@
 // but in that case we cannot represent new data types to the users
 
 enum DataType{
-    INTEGER,
-    DOUBLE,
-    FLOAT,
-    VARCHAR30,
-    BOOLEAN
+    INT_TYPE,
+    DOUBLE_TYPE
 };
 
 struct DataTypeFn {
@@ -21,47 +22,37 @@ struct DataTypeFn {
 };
 
 //inline constructor?
-class Integer {
+class INT_TYPE {
     int val;
 public:
-    Integer(int v = 0);
-    void set(int v) {
+    explicit INT_TYPE(int v = 0):val(v) {};
+
+    void set_val(const int v) {
         val = v;
     }
-    int get() const {
+
+    int get_val() const {
         return val;
     }
 
-    void print() const;
+    void print() const {std::cout << val << '\t';};
 };
 
-class Varchar30 {
-    std::string val;
-public:
-    Varchar30(std::string v = "");
-
-    void print() const;
-
-    DataType getDataType() const {
-        return DataType::VARCHAR30;
-    }
-};
-
-class Double {
+class DOUBLE_TYPE {
     double val = 0.0;
 public:
-    Double(double v = 0.0);
+    DOUBLE_TYPE(double v = 0.0): val(v) {};
 
-    void set(double v) {
+    void set_val(double v) {
         val = v;
     }
 
-    double get() const {
+    double get_val() const {
         return val;
     }
 
-    void print() const;
+    void print() const { std::cout << val << '\t';};
 };
 
-using DataValue = std::variant<Integer, Double, Varchar30>;
+using DataValue = std::variant<INT_TYPE, DOUBLE_TYPE>;
 

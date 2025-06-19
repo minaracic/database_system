@@ -4,11 +4,11 @@
 
 Table::Table() {
 // TODO: test to see difference between stack and heap allocation
-//    ColumnDataInfo* default_pk_ptr = new ColumnDataInfo(new Integer(), "Primary key", true);
-//    ColumnDataInfo default_pk = ColumnDataInfo(new Integer(), "Primary key", true);
+//    ColumnDataInfo* default_pk_ptr = new ColumnDataInfo(new INT(), "Primary key", true);
+//    ColumnDataInfo default_pk = ColumnDataInfo(new INT(), "Primary key", true);
 //    insertColumn(*default_pk_ptr);
 
-    columns_info.push_back(ColumnDataInfo(DataType::INTEGER, "ID", true));
+    columns_info.push_back(ColumnDataInfo(DataType::INT, "ID", true));
 }
 
 Table::Table(std::string table_name): Table(){
@@ -26,7 +26,7 @@ void Table::printTable() const{
     printRows();
 }
 
-bool Table::insertData(std::vector<DataValue*> data) {
+bool Table::insertData(std::vector<DataValue> data) {
     if(checkIfValidDataToInsert(data)){
         int id = primary_key_generator.getNextKey();
         Row row{id, data};
@@ -87,17 +87,17 @@ struct AddToDataValueFn<T> {
     }
 };
 
-using AddToDataValue = AddToDataValueFn<Integer, Double>;
+using AddToDataValue = AddToDataValueFn<INT, DOUBLE>;
 
 struct AddToDataValueVariantFn {
     int value;
 
-    bool operator()(Integer& i) {
+    bool operator()(INT& i) {
         i.set(i.get() + value);
         return true;
     }
 
-    bool operator()(Double& d) {
+    bool operator()(DOUBLE& d) {
         d.set(d.get() + value);
         return true;
     }

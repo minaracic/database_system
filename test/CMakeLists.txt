@@ -1,25 +1,27 @@
+project(database_system)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(FetchContent)
 FetchContent_Declare(
         googletest
-        # Specify the commit you depend on and update it regularly.
-        URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
-# For Windows: Prevent overriding the parent project's compiler/linker settings
+
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Now simply link against gtest or gtest_main as needed. Eg
 add_executable(database_system_test
-        main_test.cpp)
-
-#add_dependencies(database_system_test src)
+        data_types_test.cpp)
 
 target_include_directories(database_system_test PUBLIC
         ${PROJECT_SOURCE_DIR}/src
-        ${PROJECT_SOURCE_DIR}/src/primary_key_generator
-        ${PROJECT_SOURCE_DIR}/src/database
-        ${PROJECT_SOURCE_DIR}/src/table
-        ${PROJECT_SOURCE_DIR}/src/column_data_info
+#        ${PROJECT_SOURCE_DIR}/src/primary_key_generator
+#        ${PROJECT_SOURCE_DIR}/src/database
+#        ${PROJECT_SOURCE_DIR}/src/table
+#        ${PROJECT_SOURCE_DIR}/src/column_data_info
         ${PROJECT_SOURCE_DIR}/src/data_types)
 
 target_link_libraries(database_system_test PUBLIC
