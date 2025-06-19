@@ -19,3 +19,5 @@ target_include_directories(database_system PUBLIC
 
 target_link_libraries(database_system PUBLIC
         src)
+
+enable_testing()
