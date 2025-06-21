@@ -1,4 +1,4 @@
-## Database system project setup
+## Database server project setup
 
 ### Building src code & tests
     cmake --build cmake-build-debug/
